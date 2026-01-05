@@ -1,7 +1,15 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router'
+import { RouterView, useRoute } from 'vue-router'
+import MainLayout from '@/layouts/MainLayout.vue'
+
+const route = useRoute()
 </script>
 
 <template>
-  <RouterView />
+  <template v-if="route.name === 'login'">
+    <RouterView />
+  </template>
+  <MainLayout v-else>
+    <RouterView />
+  </MainLayout>
 </template>

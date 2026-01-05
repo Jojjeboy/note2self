@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import { useAuthStore } from '@/stores/auth'
+import { useAuth } from '@/composables/useAuth'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -8,7 +7,13 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/DashboardView.vue'),
+    },
+    {
+      path: '/workspace/:id',
+      name: 'workspace',
+      component: () => import('../views/WorkspaceView.vue'),
+      props: true
     },
     {
       path: '/login',
@@ -20,15 +25,15 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore()
+  const { user, loading, waitForAuth } = useAuth()
 
   // Wait for auth to init if not already
-  if (authStore.loading) {
-    await authStore.initAuth()
+  if (loading.value) {
+    await waitForAuth()
   }
 
   const isPublic = to.name === 'login'
-  const isAuthenticated = !!authStore.user
+  const isAuthenticated = !!user.value
 
   if (!isPublic && !isAuthenticated) {
     next('/login')
