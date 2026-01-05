@@ -11,7 +11,7 @@ import InputModal from '@/components/InputModal.vue'
 import { useTheme } from '@/composables/useTheme'
 
 const emit = defineEmits<{
-  (e: 'close'): void
+  close: []
 }>()
 
 const { user, logout } = useAuth()

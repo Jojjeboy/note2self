@@ -60,12 +60,14 @@ const handleExport = async () => {
         a.download = `${props.workspaceName}_export.zip`
         document.body.appendChild(a)
         a.click()
-        document.body.removeChild(a)
+        a.remove()
         URL.revokeObjectURL(url)
 
-    } catch (e) {
-        console.error('Export failed', e)
-        alert('Export failed. Check console for details.')
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error('Export failed', e.message)
+            alert('Export failed: ' + e.message)
+        }
     } finally {
         isExporting.value = false
     }

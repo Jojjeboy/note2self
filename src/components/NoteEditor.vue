@@ -14,7 +14,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'move', note: NoteItem): void
+  move: [note: NoteItem]
 }>()
 
 const content = ref(props.note.content || '')
@@ -50,8 +50,11 @@ const saveContent = async () => {
             content: content.value
         })
         lastSaved.value = new Date()
-    } catch (e) {
-        console.error('Save failed', e)
+    } catch (e: unknown) {
+        if (e instanceof Error) {
+            console.error('Export failed', e.message)
+            alert('Export failed: ' + e.message)
+        }
     } finally {
         isSaving.value = false
     }

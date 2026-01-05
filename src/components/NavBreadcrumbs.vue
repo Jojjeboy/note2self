@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'navigate', id: string | null): void
+  navigate: [id: string | null]
 }>()
 
 const path = computed(() => {

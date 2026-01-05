@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 import { useWorkspaces, type Workspace } from '@/composables/useWorkspaces'
-import { useNotes } from '@/composables/useNotes'
 import InputModal from '@/components/InputModal.vue'
 
 const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, updateWorkspace, deleteWorkspace, loading } = useWorkspaces()
@@ -18,10 +18,26 @@ const workspaceItemCounts = ref<Record<string, number>>({})
 // Fetch items for workspaces to check if they're empty
 const updateWorkspaceItemCounts = async () => {
   for (const ws of workspaces.value) {
-    const { items } = useNotes(computed(() => ws.id))
-    // Wait a tick for items to load
-    await new Promise(resolve => setTimeout(resolve, 100))
-    workspaceItemCounts.value[ws.id] = items.value.length
+    // We cannot use useNotes inside a loop/async function like this effectively
+    // because composables must be called at top level of setup.
+    // Instead, we should probably have a way to count items outside of useNotes
+    // or call a dedicated counting function.
+    // For now, let's keep it simple and just fetch the collection.
+    // Actually, I'll use a standard Firestore query here to avoid top-level constraint.
+    try {
+        const { getDocs, collection, query, where } = await import('firebase/firestore')
+        const { db } = await import('@/firebase/config')
+        const q = query(
+          collection(db, 'items'),
+          where('workspaceId', '==', ws.id)
+        )
+        const snapshot = await getDocs(q)
+        workspaceItemCounts.value[ws.id] = snapshot.size
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            console.error('Failed to count items for workspace:', ws.id, err.message)
+        }
+    }
   }
 }
 

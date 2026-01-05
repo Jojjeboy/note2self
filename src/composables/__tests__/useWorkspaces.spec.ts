@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { useWorkspaces } from '../useWorkspaces'
 
@@ -24,13 +23,14 @@ const mockOnSnapshot = vi.fn((q, callback) => {
 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(),
-  addDoc: (...args: any[]) => mockAddDoc(...args),
-  deleteDoc: (...args: any[]) => mockDeleteDoc(...args),
+  addDoc: (...args: unknown[]) => mockAddDoc(...args),
+  deleteDoc: (...args: unknown[]) => mockDeleteDoc(...args),
   doc: vi.fn(),
   query: vi.fn(),
   where: vi.fn(),
   orderBy: vi.fn(),
-  onSnapshot: (...args: any[]) => mockOnSnapshot(...args),
+  // @ts-expect-error - spread unknown[] into mock
+  onSnapshot: (...args: unknown[]) => mockOnSnapshot(...args),
   serverTimestamp: vi.fn()
 }))
 
