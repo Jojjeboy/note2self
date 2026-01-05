@@ -1,9 +1,9 @@
-<script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useWorkspaces, type Workspace } from '@/composables/useWorkspaces'
+import { useNotes } from '@/composables/useNotes'
 import InputModal from '@/components/InputModal.vue'
 
-const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, updateWorkspace, loading } = useWorkspaces()
+const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, updateWorkspace, deleteWorkspace, loading } = useWorkspaces()
 const isOpen = ref(false)
 const isCreating = ref(false)
 const newWorkspaceName = ref('')
@@ -11,6 +11,27 @@ const newWorkspaceName = ref('')
 // Rename modal state
 const isRenameModalOpen = ref(false)
 const workspaceToRename = ref<Workspace | null>(null)
+
+// Get item counts for each workspace
+const workspaceItemCounts = ref<Record<string, number>>({})
+
+// Fetch items for workspaces to check if they're empty
+const updateWorkspaceItemCounts = async () => {
+  for (const ws of workspaces.value) {
+    const { items } = useNotes(computed(() => ws.id))
+    // Wait a tick for items to load
+    await new Promise(resolve => setTimeout(resolve, 100))
+    workspaceItemCounts.value[ws.id] = items.value.length
+  }
+}
+
+// Update counts when dropdown opens
+const toggleDropdown = () => {
+  isOpen.value = !isOpen.value
+  if (isOpen.value) {
+    updateWorkspaceItemCounts()
+  }
+}
 
 const handleCreate = async () => {
   if (!newWorkspaceName.value.trim()) return
@@ -22,10 +43,6 @@ const handleCreate = async () => {
   } catch (error) {
     console.error('Failed to create workspace:', error)
   }
-}
-
-const toggleDropdown = () => {
-  isOpen.value = !isOpen.value
 }
 
 const selectWorkspace = (ws: Workspace) => {
@@ -48,6 +65,25 @@ const handleRename = async (newName: string) => {
       workspaceToRename.value = null
     } catch (error) {
       console.error('Failed to rename workspace:', error)
+    }
+  }
+}
+
+const handleDelete = async (ws: Workspace, event: Event) => {
+  event.stopPropagation()
+  const itemCount = workspaceItemCounts.value[ws.id] || 0
+
+  if (itemCount > 0) {
+    alert(`Cannot delete workspace "${ws.name}" - it contains ${itemCount} item(s). Please delete all items first.`)
+    return
+  }
+
+  if (confirm(`Are you sure you want to delete workspace "${ws.name}"?`)) {
+    try {
+      await deleteWorkspace(ws.id)
+      isOpen.value = false
+    } catch (error) {
+      console.error('Failed to delete workspace:', error)
     }
   }
 }
@@ -84,13 +120,23 @@ const handleRename = async (newName: string) => {
             >
               {{ ws.name }}
             </button>
-            <button
-              @click="openRenameModal(ws, $event)"
-              class="p-1 opacity-0 group-hover:opacity-100 hover:text-blue-600 transition-opacity"
-              title="Rename workspace"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-            </button>
+            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                @click="openRenameModal(ws, $event)"
+                class="p-1 hover:text-blue-600"
+                title="Rename workspace"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              </button>
+              <button
+                v-if="(workspaceItemCounts[ws.id] || 0) === 0"
+                @click="handleDelete(ws, $event)"
+                class="p-1 hover:text-red-600"
+                title="Delete empty workspace"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
           </div>
         </div>
 

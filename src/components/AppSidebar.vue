@@ -163,11 +163,12 @@ const handleLogout = async () => {
       </div>
   </aside>
 
-   <InputModal
-     :isOpen="isCreateModalOpen"
-     :title="modalTitle"
-     :placeholder="modalPlaceholder"
-     @close="isCreateModalOpen = false"
-     @submit="handleModalSubmit"
-   />
+<!-- InputModal moved outside to prevent z-index issues -->
+<InputModal
+  :isOpen="isCreateModalOpen"
+  :title="modalTitle"
+  :placeholder="modalPlaceholder"
+  @close="isCreateModalOpen = false"
+  @submit="handleModalSubmit"
+/>
 </template>
