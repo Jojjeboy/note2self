@@ -34,6 +34,11 @@ export default defineConfig({
     }),
   ],
   base: '/note2self/',
+  build: {
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 1000,
+    watch: null,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),

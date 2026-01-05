@@ -1,0 +1,40 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "create": "Create",
+    "delete": "Delete",
+    "rename": "Rename",
+    "save": "Save",
+    "logout": "Sign Out",
+    "language": "Language",
+    "theme": "Appearance",
+    "settings": "Settings",
+    "dashboard": "Dashboard"
+  },
+  "sidebar": {
+    "new_folder": "New Folder",
+    "new_note": "New Note",
+    "storage": "Storage",
+    "no_workspace": "Select or create a workspace."
+  },
+  "workspace": {
+    "delete_workspace": "Delete Workspace",
+    "delete_workspace_confirm": "Are you sure you want to delete this workspace and ALL its contents? This cannot be undone.",
+    "empty_dashboard": "This workspace is empty.",
+    "dashboard_title": "Workspace Usage"
+  },
+  "file_tree": {
+    "new_note": "New Note",
+    "new_folder": "New Folder",
+    "rename_item": "Rename Item",
+    "delete_item": "Delete Item",
+    "delete_confirm": "Are you sure you want to delete '{name}'?"
+  },
+  "settings": {
+    "title": "Settings",
+    "select_language": "Select Language",
+    "dark_mode": "Dark Mode",
+    "account": "Account"
+  }
+}

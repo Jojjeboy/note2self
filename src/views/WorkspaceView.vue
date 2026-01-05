@@ -68,6 +68,16 @@ const folderItems = computed(() => {
         })
 })
 
+const dashboardItems = computed(() => {
+    // Show root items if no folder/note selected
+    if (selectedFolderId.value || selectedNoteId.value) return []
+    return items.value.filter(i => !i.parentId) // Root items
+        .sort((a, b) => {
+            if (a.type === b.type) return a.title.localeCompare(b.title)
+            return a.type === 'folder' ? -1 : 1
+        })
+})
+
 const currentFolder = computed(() => {
     return items.value.find(i => i.id === selectedFolderId.value)
 })
@@ -228,10 +238,44 @@ const workspaceName = computed(() => currentWorkspace.value?.name || 'Workspace'
         </div>
     </div>
 
-    <!-- Empty State (No Note, No Folder) -->
-    <div v-else class="flex-1 flex flex-col items-center justify-center text-gray-400">
-      <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-      <p class="text-lg font-medium">Select an item from the sidebar</p>
+    <!-- Dashboard / Root View -->
+    <div v-else class="flex-1 p-6 overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Workspace Overview</h2>
+
+        <div v-if="dashboardItems.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+             <div
+                v-for="item in dashboardItems"
+                :key="item.id"
+                class="relative group"
+            >
+                <div
+                    @click="navigateToItem(item)"
+                    class="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md cursor-pointer transition-all flex flex-col items-center text-center gap-2"
+                >
+                    <div v-if="item.type === 'folder'" class="text-yellow-500 group-hover:scale-110 transition-transform">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                    </div>
+                    <div v-else class="text-blue-500 group-hover:scale-110 transition-transform">
+                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                    <span class="text-sm font-medium truncate w-full text-gray-700 dark:text-gray-200">{{ item.title }}</span>
+                </div>
+                 <!-- Quick Move Button on Card -->
+                <button
+                    @click.stop="openMoveModal(item)"
+                    class="absolute top-2 right-2 p-1 bg-white/80 dark:bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-blue-500"
+                    title="Move"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <div v-else class="flex flex-col items-center justify-center py-20 text-gray-500">
+             <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+             <p class="text-lg font-medium">Workspace is empty</p>
+             <p class="text-sm">Create items using the sidebar</p>
+        </div>
     </div>
 
     <MoveModal

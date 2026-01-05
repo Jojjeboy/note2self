@@ -6,8 +6,15 @@ service cloud.firestore {
       allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
     }
     match /items/{itemId} {
+      // Allow reading items if user owns the item directly
       allow read, update, delete: if request.auth != null && request.auth.uid == resource.data.userId;
       allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+      
+      // Allow listing items by workspaceId if user owns the workspace
+      allow list: if request.auth != null 
+                  && request.query.limit <= 100
+                  && exists(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId))
+                  && get(/databases/$(database)/documents/workspaces/$(resource.data.workspaceId)).data.userId == request.auth.uid;
     }
   }
 }

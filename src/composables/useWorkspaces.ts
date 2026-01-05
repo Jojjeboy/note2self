@@ -10,7 +10,8 @@ import {
   serverTimestamp,
   orderBy,
   Timestamp,
-  updateDoc
+  updateDoc,
+  getDocs
 } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 import { useAuth } from './useAuth'
@@ -85,9 +86,23 @@ export function useWorkspaces() {
   }
 
   const deleteWorkspace = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this workspace? All files inside will be hidden.')) return
+    // Note: UI confirmation should be handled by the component before calling this
     try {
+      // 1. Recursive delete: Fetch all items in this workspace
+      const q = query(
+        collection(db, 'items'),
+        where('workspaceId', '==', id)
+      )
+
+      const snapshot = await getDocs(q)
+
+      // 2. Delete all items (batched if possible, or individual promises)
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref))
+      await Promise.all(deletePromises)
+
+      // 3. Delete the workspace itself
       await deleteDoc(doc(db, 'workspaces', id))
+
       if (currentWorkspace.value?.id === id) {
         currentWorkspace.value = workspaces.value[0] || null
       }

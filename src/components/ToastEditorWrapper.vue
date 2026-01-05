@@ -106,12 +106,31 @@ onBeforeUnmount(() => {
 }
 .dark .toastui-editor-toolbar {
     border-bottom: 1px solid #374151 !important;
+    background-color: #111827 !important; /* gray-900 (page bg) */
+}
+
+/* Make content area distinct in dark mode */
+.toastui-editor-contents {
+    font-family: inherit !important;
+}
+.toastui-editor-ww-container {
+    background-color: #ffffff;
+}
+.dark .toastui-editor-ww-container {
+    background-color: #1f2937 !important; /* gray-800 - distinct from page bg #111827 */
+}
+
+/* Markdown mode distinction */
+.dark .toastui-editor-md-container,
+.dark .toastui-editor-md-container .toastui-editor {
     background-color: #1f2937 !important;
 }
+
 .toastui-editor-mode-switch {
     background-color: #f9fafb !important;
 }
 .dark .toastui-editor-mode-switch {
-    background-color: #1f2937 !important;
+    background-color: #111827 !important;
+    border-top: 1px solid #374151 !important;
 }
 </style>

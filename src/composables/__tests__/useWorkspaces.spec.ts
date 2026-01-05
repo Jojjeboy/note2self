@@ -31,7 +31,15 @@ vi.mock('firebase/firestore', () => ({
   orderBy: vi.fn(),
   // @ts-expect-error - spread unknown[] into mock
   onSnapshot: (...args: unknown[]) => mockOnSnapshot(...args),
-  serverTimestamp: vi.fn()
+  serverTimestamp: vi.fn(),
+  updateDoc: vi.fn(),
+  getDocs: vi.fn().mockResolvedValue({
+    docs: [
+      { ref: 'item-ref-1' },
+      { ref: 'item-ref-2' }
+    ],
+    size: 2
+  })
 }))
 
 vi.mock('@/firebase/config', () => ({
@@ -59,8 +67,6 @@ describe('useWorkspaces', () => {
   })
 
   it('deletes a workspace', async () => {
-    // confirmation mock
-    window.confirm = vi.fn(() => true)
 
     const { deleteWorkspace } = useWorkspaces()
     await deleteWorkspace('1')

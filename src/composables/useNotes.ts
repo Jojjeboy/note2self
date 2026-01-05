@@ -9,7 +9,8 @@ import {
   onSnapshot,
   serverTimestamp,
   orderBy,
-  Timestamp
+  Timestamp,
+  updateDoc
 } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 import { useAuth } from './useAuth'
@@ -101,7 +102,7 @@ export function useNotes(workspaceId: MaybeRefOrGetter<string | undefined>) {
   }
 
   const deleteItem = async (id: string) => {
-    if (!confirm('Area you sure you want to delete this item?')) return
+    // Confirmation handled by UI
     error.value = null
     try {
       await deleteDoc(doc(db, 'items', id))
@@ -115,11 +116,24 @@ export function useNotes(workspaceId: MaybeRefOrGetter<string | undefined>) {
     }
   }
 
+  const updateItem = async (id: string, updates: Partial<Omit<NoteItem, 'id' | 'createdAt' | 'userId' | 'workspaceId'>>) => {
+    error.value = null
+    try {
+      await updateDoc(doc(db, 'items', id), updates)
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        error.value = err.message
+      }
+      throw err
+    }
+  }
+
   return {
     items,
     loading,
     error,
     createItem,
-    deleteItem
+    deleteItem,
+    updateItem
   }
 }

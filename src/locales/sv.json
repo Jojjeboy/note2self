@@ -1,0 +1,40 @@
+{
+  "common": {
+    "cancel": "Avbryt",
+    "confirm": "Bekräfta",
+    "create": "Skapa",
+    "delete": "Ta bort",
+    "rename": "Byt namn",
+    "save": "Spara",
+    "logout": "Logga ut",
+    "language": "Språk",
+    "theme": "Utseende",
+    "settings": "Inställningar",
+    "dashboard": "Översikt"
+  },
+  "sidebar": {
+    "new_folder": "Ny Mapp",
+    "new_note": "Ny Anteckning",
+    "storage": "Lagring",
+    "no_workspace": "Välj eller skapa en arbetsyta."
+  },
+  "workspace": {
+    "delete_workspace": "Ta bort arbetsyta",
+    "delete_workspace_confirm": "Är du säker på att du vill ta bort denna arbetsyta och ALLT innehåll? Detta går inte att ångra.",
+    "empty_dashboard": "Denna arbetsyta är tom.",
+    "dashboard_title": "Arbetsyta Översikt"
+  },
+  "file_tree": {
+    "new_note": "Ny Anteckning",
+    "new_folder": "Ny Mapp",
+    "rename_item": "Byt namn",
+    "delete_item": "Ta bort objekt",
+    "delete_confirm": "Är du säker på att du vill ta bort '{name}'?"
+  },
+  "settings": {
+    "title": "Inställningar",
+    "select_language": "Välj Språk",
+    "dark_mode": "Mörkt Läge",
+    "account": "Konto"
+  }
+}

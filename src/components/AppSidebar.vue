@@ -6,29 +6,31 @@ import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import WorkspaceSelector from '@/components/WorkspaceSelector.vue'
 import FileTree from '@/components/FileTree.vue'
-import ExportButton from '@/components/ExportButton.vue'
 import InputModal from '@/components/InputModal.vue'
-import { useTheme } from '@/composables/useTheme'
+import { useLayout } from '@/composables/useLayout'
+import { useI18n } from 'vue-i18n'
 
-const emit = defineEmits<{
-  close: []
-}>()
+// No emits needed for close anymore
+const { closeSidebar } = useLayout()
 
-const { user, logout } = useAuth()
+const { user } = useAuth()
 const { currentWorkspace } = useWorkspaces()
 const router = useRouter()
-const { isDark, toggleTheme } = useTheme()
+const { t } = useI18n()
 
 // Fetch notes for the current workspace
 const { items, createItem } = useNotes(computed(() => currentWorkspace.value?.id))
 
-// Modal state
+// ... modal state ...
 const isCreateModalOpen = ref(false)
 const modalTitle = ref('')
 const modalPlaceholder = ref('')
 const pendingAction = ref<{ type: 'folder' | 'note', parentId: string | null } | null>(null)
 
 const handleSelect = (item: NoteItem) => {
+  console.log('AppSidebar: handleSelect', item.title)
+  closeSidebar()
+
   if (item.type === 'note') {
     router.push({
         name: 'workspace',
@@ -42,7 +44,6 @@ const handleSelect = (item: NoteItem) => {
           query: { folderId: item.id }
       })
   }
-  emit('close')
 }
 
 const handleCreateFolder = (parentId: string | null) => {
@@ -68,31 +69,28 @@ const handleModalSubmit = async (name: string) => {
   pendingAction.value = null
 }
 
-const handleLogout = async () => {
-  await logout()
-  router.push('/login')
-}
 </script>
 
 <template>
   <aside
-    class="w-64 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col h-full transition-colors duration-300 transform md:translate-x-0 z-30"
+    v-bind="$attrs"
+    class="w-64 border-r border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex flex-col h-full transition-colors duration-300 z-30"
   >
     <!-- Header / Workspace Selector -->
     <div class="p-2 border-b border-gray-200 dark:border-gray-700">
       <div class="mb-2 px-2 flex items-center justify-between">
          <h1
-            @click="router.push('/')"
+            @click="() => { router.push('/'); closeSidebar(); }"
             class="font-bold text-lg tracking-tight cursor-pointer hover:text-blue-600 transition-colors"
          >
             Note <span class="text-blue-600">2</span> Self
          </h1>
          <!-- Mobile Close Button (Visible only on mobile sidebar) -->
-         <button @click="$emit('close')" class="md:hidden text-gray-500">
+         <button @click="closeSidebar" class="md:hidden text-gray-500">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
          </button>
       </div>
-      <WorkspaceSelector />
+      <WorkspaceSelector @select="closeSidebar" />
     </div>
 
     <!-- File Tree -->
@@ -112,6 +110,7 @@ const handleLogout = async () => {
 
         <!-- Pass move handler? FileTree needs update to support actions? For now, simplistic. -->
         <FileTree
+          :key="currentWorkspace.id"
           :items="items"
           :parentId="null"
           @select="handleSelect"
@@ -127,25 +126,18 @@ const handleLogout = async () => {
       </div>
     </div>
 
-    <!-- Footer -->
+     <!-- Footer -->
      <div class="p-4 border-t border-gray-200 dark:border-gray-700 space-y-3">
 
         <div v-if="currentWorkspace" class="flex justify-between items-center px-1">
-            <ExportButton
-                :workspaceId="currentWorkspace.id"
-                :workspaceName="currentWorkspace.name"
-            />
 
-            <button
-                @click="toggleTheme"
+            <router-link
+                to="/settings"
                 class="p-1 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+                :title="t('common.settings')"
             >
-                <!-- Sun -->
-                <svg v-if="isDark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707-.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                <!-- Moon -->
-                <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-            </button>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+            </router-link>
         </div>
 
         <div v-if="user" class="flex items-center gap-3 pt-2 border-t border-gray-200 dark:border-gray-800">
@@ -157,7 +149,6 @@ const handleLogout = async () => {
           >
           <div class="overflow-hidden flex-1">
              <p class="text-sm font-medium truncate">{{ user.displayName }}</p>
-             <button @click="handleLogout" class="text-xs text-red-500 hover:text-red-700">Sign Out</button>
           </div>
         </div>
       </div>

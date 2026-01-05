@@ -2,11 +2,16 @@
 import { ref } from 'vue'
 import { useWorkspaces, type Workspace } from '@/composables/useWorkspaces'
 import InputModal from '@/components/InputModal.vue'
+import ConfirmModal from '@/components/ConfirmModal.vue'
 
 const { workspaces, currentWorkspace, setCurrentWorkspace, createWorkspace, updateWorkspace, deleteWorkspace, loading } = useWorkspaces()
 const isOpen = ref(false)
 const isCreating = ref(false)
 const newWorkspaceName = ref('')
+
+// Delete modal state
+const isDeleteModalOpen = ref(false)
+const workspaceToDelete = ref<Workspace | null>(null)
 
 // Rename modal state
 const isRenameModalOpen = ref(false)
@@ -34,7 +39,8 @@ const updateWorkspaceItemCounts = async () => {
         const snapshot = await getDocs(q)
         workspaceItemCounts.value[ws.id] = snapshot.size
     } catch (err: unknown) {
-        if (err instanceof Error) {
+        // Silently ignore permission errors for counting - just means we can't verify emptiness
+        if (err instanceof Error && !err.message.includes('Missing or insufficient permissions')) {
             console.error('Failed to count items for workspace:', ws.id, err.message)
         }
     }
@@ -61,9 +67,14 @@ const handleCreate = async () => {
   }
 }
 
+const emit = defineEmits<{
+  (e: 'select', workspace: Workspace): void
+}>()
+
 const selectWorkspace = (ws: Workspace) => {
   setCurrentWorkspace(ws)
   isOpen.value = false
+  emit('select', ws)
 }
 
 const openRenameModal = (ws: Workspace, event: Event) => {
@@ -85,23 +96,24 @@ const handleRename = async (newName: string) => {
   }
 }
 
-const handleDelete = async (ws: Workspace, event: Event) => {
-  event.stopPropagation()
-  const itemCount = workspaceItemCounts.value[ws.id] || 0
-
-  if (itemCount > 0) {
-    alert(`Cannot delete workspace "${ws.name}" - it contains ${itemCount} item(s). Please delete all items first.`)
-    return
-  }
-
-  if (confirm(`Are you sure you want to delete workspace "${ws.name}"?`)) {
+const handleDelete = async () => {
+  if (workspaceToDelete.value) {
     try {
-      await deleteWorkspace(ws.id)
+      await deleteWorkspace(workspaceToDelete.value.id)
+      isDeleteModalOpen.value = false
+      workspaceToDelete.value = null
       isOpen.value = false
     } catch (error) {
       console.error('Failed to delete workspace:', error)
     }
   }
+}
+
+const confirmDelete = (ws: Workspace, event: Event) => {
+  event.stopPropagation()
+  workspaceToDelete.value = ws
+  isDeleteModalOpen.value = true
+  isOpen.value = false
 }
 </script>
 
@@ -145,10 +157,9 @@ const handleDelete = async (ws: Workspace, event: Event) => {
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
               </button>
               <button
-                v-if="(workspaceItemCounts[ws.id] || 0) === 0"
-                @click="handleDelete(ws, $event)"
+                @click="confirmDelete(ws, $event)"
                 class="p-1 hover:text-red-600"
-                title="Delete empty workspace"
+                title="Delete workspace"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
               </button>
@@ -208,6 +219,17 @@ const handleDelete = async (ws: Workspace, event: Event) => {
       :defaultValue="workspaceToRename?.name"
       @close="isRenameModalOpen = false"
       @submit="handleRename"
+    />
+
+    <!-- Delete Confirmation Modal -->
+    <ConfirmModal
+      :isOpen="isDeleteModalOpen"
+      title="Delete Workspace"
+      :message="`Are you sure you want to delete '${workspaceToDelete?.name}'? This will permanently delete ALL content inside it.`"
+      confirmText="Delete"
+      :isDangerous="true"
+      @close="isDeleteModalOpen = false"
+      @confirm="handleDelete"
     />
   </div>
 </template>
