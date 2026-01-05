@@ -14,8 +14,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logo.png', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: 'Vue Firebase Boilerplate',
-        short_name: 'VueBoiler',
+        name: 'Note 2 Self',
+        short_name: 'note2self',
         description: 'A minimalist Vue 3 Boilerplate with Firebase Auth',
         theme_color: '#ffffff',
         icons: [
@@ -33,7 +33,7 @@ export default defineConfig({
       },
     }),
   ],
-  base: '/boiler/',
+  base: '/note2self/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
