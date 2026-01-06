@@ -192,107 +192,156 @@ const workspaceName = computed(() => currentWorkspace.value?.name || 'Workspace'
     />
 
     <!-- Folder View -->
-    <div v-else-if="selectedFolderId" class="flex-1 p-2 md:p-6 overflow-y-auto">
-        <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
-            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-            {{ currentFolder?.title || 'Folder' }}
-
-             <button
-                v-if="currentFolder"
-                @click="openMoveModal(currentFolder)"
-                class="ml-4 p-1 text-gray-400 hover:text-blue-500"
-                title="Move Folder"
-            >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-            </button>
-        </h2>
-
-        <div v-if="folderItems.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <div
-                v-for="item in folderItems"
-                :key="item.id"
-                class="relative group"
-            >
-                <div
-                    @click="navigateToItem(item)"
-                    class="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md cursor-pointer transition-all flex flex-col items-center text-center gap-2"
-                >
-                    <div v-if="item.type === 'folder'" class="text-yellow-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                    </div>
-                    <div v-else class="text-blue-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    </div>
-                    <span class="text-sm font-medium truncate w-full">{{ item.title }}</span>
-                </div>
-                <!-- Quick Move Button on Card -->
-                <button
-                    @click.stop="openMoveModal(item)"
-                    class="absolute top-2 right-2 p-1 bg-white/80 dark:bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-blue-500"
-                    title="Move"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                </button>
+    <div v-else-if="selectedFolderId" class="flex-1 overflow-y-auto">
+        <div class="px-2 md:px-0">
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/20 rounded-2xl flex items-center justify-center text-yellow-600 dark:text-yellow-500 shadow-sm transition-transform hover:scale-105">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-white leading-tight">
+                  {{ currentFolder?.title || 'Folder' }}
+                </h2>
+                <p class="text-sm text-slate-400 dark:text-slate-500 font-medium">
+                  {{ folderItems.length }} {{ folderItems.length === 1 ? 'item' : 'items' }} in this collection
+                </p>
+              </div>
             </div>
-        </div>
 
-        <div v-else class="flex flex-col items-center justify-center py-20 text-gray-500">
-            <svg class="w-16 h-16 mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
-            <p class="text-lg mb-6">This folder is empty</p>
-            <div class="flex gap-4">
-                <button
-                    @click="createInFolder('folder')"
-                    class="px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg font-medium transition-colors"
-                >
-                    Create Folder
-                </button>
-                <button
-                    @click="createInFolder('note')"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors shadow-lg shadow-blue-500/30"
-                >
-                    Create Note
-                </button>
+            <div class="flex items-center gap-2">
+              <button
+                  v-if="currentFolder"
+                  @click="openMoveModal(currentFolder)"
+                  class="p-2.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all active:scale-90"
+                  title="Move Folder"
+              >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+              </button>
+
+              <button
+                @click="createInFolder('note')"
+                class="hidden md:flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                New Note
+              </button>
             </div>
+          </div>
+
+          <div v-if="folderItems.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+              <div
+                  v-for="item in folderItems"
+                  :key="item.id"
+                  class="relative group"
+              >
+                  <div
+                      @click="navigateToItem(item)"
+                      class="premium-card p-6 flex flex-col items-center text-center gap-4 group"
+                  >
+                      <div v-if="item.type === 'folder'" class="w-16 h-16 bg-yellow-50 dark:bg-yellow-900/10 rounded-2xl flex items-center justify-center text-yellow-500 shadow-sm group-hover:scale-110 transition-transform">
+                          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                      </div>
+                      <div v-else class="w-16 h-16 bg-blue-50 dark:bg-blue-900/10 rounded-2xl flex items-center justify-center text-blue-500 shadow-sm group-hover:scale-110 transition-transform">
+                          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                      </div>
+                      <span class="text-sm font-bold text-slate-700 dark:text-slate-200 truncate w-full group-hover:text-blue-600 transition-colors">{{ item.title }}</span>
+                  </div>
+                  <!-- Quick Move Button on Card -->
+                  <button
+                      @click.stop="openMoveModal(item)"
+                      class="absolute top-2 right-2 p-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:text-blue-600 shadow-sm border border-gray-100 dark:border-slate-700"
+                      title="Move"
+                  >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                  </button>
+              </div>
+          </div>
+
+          <div v-else class="flex flex-col items-center justify-center py-24 text-center">
+              <div class="w-24 h-24 bg-slate-50 dark:bg-slate-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner">
+                <svg class="w-12 h-12 text-slate-200 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+              </div>
+              <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Empty Folder</h3>
+              <p class="text-slate-400 dark:text-slate-500 mb-8 max-w-xs leading-relaxed">
+                  Start fresh! Create a subfolder or a new note to organize your thoughts.
+              </p>
+              <div class="flex gap-3">
+                  <button
+                      @click="createInFolder('folder')"
+                      class="px-6 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl font-bold text-sm text-slate-600 dark:text-slate-300 transition-all active:scale-95"
+                  >
+                      New Folder
+                  </button>
+                  <button
+                      @click="createInFolder('note')"
+                      class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+                  >
+                      New Note
+                  </button>
+              </div>
+          </div>
         </div>
     </div>
 
     <!-- Dashboard / Root View -->
-    <div v-else class="flex-1 p-2 md:p-6 overflow-y-auto">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Workspace Overview</h2>
-
-        <div v-if="dashboardItems.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-             <div
-                v-for="item in dashboardItems"
-                :key="item.id"
-                class="relative group"
-            >
-                <div
-                    @click="navigateToItem(item)"
-                    class="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md cursor-pointer transition-all flex flex-col items-center text-center gap-2"
-                >
-                    <div v-if="item.type === 'folder'" class="text-yellow-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                    </div>
-                    <div v-else class="text-blue-500 group-hover:scale-110 transition-transform">
-                        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                    </div>
-                    <span class="text-sm font-medium truncate w-full text-gray-700 dark:text-gray-200">{{ item.title }}</span>
-                </div>
-                 <!-- Quick Move Button on Card -->
-                <button
-                    @click.stop="openMoveModal(item)"
-                    class="absolute top-2 right-2 p-1 bg-white/80 dark:bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:text-blue-500"
-                    title="Move"
-                >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                </button>
+    <div v-else class="flex-1 overflow-y-auto">
+        <div class="px-2 md:px-0">
+          <div class="flex items-center justify-between mb-8">
+            <div>
+              <h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                {{ workspaceName }}
+              </h2>
+              <p class="text-sm text-slate-500 dark:text-slate-400 font-medium">
+                Browsing your collection in this workspace
+              </p>
             </div>
-        </div>
+          </div>
 
-        <div v-else class="flex flex-col items-center justify-center py-20 text-gray-500">
-             <svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-             <p class="text-lg font-medium">Workspace is empty</p>
-             <p class="text-sm">Create items using the sidebar</p>
+          <div v-if="dashboardItems.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+               <div
+                  v-for="item in dashboardItems"
+                  :key="item.id"
+                  class="relative group"
+              >
+                  <div
+                      @click="navigateToItem(item)"
+                      class="premium-card p-6 flex flex-col items-center text-center gap-4 group"
+                  >
+                      <div v-if="item.type === 'folder'" class="w-16 h-16 bg-yellow-50 dark:bg-yellow-900/10 rounded-2xl flex items-center justify-center text-yellow-500 shadow-sm group-hover:scale-110 transition-transform">
+                          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                      </div>
+                      <div v-else class="w-16 h-16 bg-blue-50 dark:bg-blue-900/10 rounded-2xl flex items-center justify-center text-blue-500 shadow-sm group-hover:scale-110 transition-transform">
+                          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                      </div>
+                      <span class="text-sm font-bold text-slate-700 dark:text-slate-200 truncate w-full group-hover:text-blue-600 transition-colors leading-tight">{{ item.title }}</span>
+                  </div>
+                   <!-- Quick Move Button on Card -->
+                  <button
+                      @click.stop="openMoveModal(item)"
+                      class="absolute top-2 right-2 p-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:text-blue-600 shadow-sm border border-gray-100 dark:border-slate-700"
+                      title="Move"
+                  >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                  </button>
+              </div>
+          </div>
+
+          <div v-else class="flex flex-col items-center justify-center py-24 text-center">
+               <div class="w-24 h-24 bg-slate-50 dark:bg-slate-900 rounded-[2rem] flex items-center justify-center mb-6 shadow-inner border border-slate-100 dark:border-slate-800">
+                  <svg class="w-12 h-12 text-slate-200 dark:text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+               </div>
+               <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Empty Workspace</h3>
+               <p class="text-slate-400 dark:text-slate-500 mb-8 max-w-xs leading-relaxed">
+                 This workspace doesn't have any content yet. Use the sidebar or create a new note below.
+               </p>
+               <button
+                 @click="createInFolder('note')"
+                 class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-xl shadow-blue-500/20 active:scale-95"
+               >
+                 Create First Note
+               </button>
+          </div>
         </div>
     </div>
 

@@ -1,3 +1,37 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #3b82f6;
+  --color-primary-hover: #2563eb;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f9fafb;
+  --color-surface-dark: #121212;
+  --color-surface-hover-dark: #1e1e1e;
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+
+  --shadow-premium: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+  --shadow-premium-dark: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/20 dark:border-gray-700/30;
+  }
+
+  .premium-card {
+    @apply bg-white dark:bg-gray-800 rounded-3xl shadow-premium dark:shadow-premium-dark border border-gray-100 dark:border-gray-700/50 transition-all duration-300;
+  }
+
+  .premium-card:hover {
+    @apply shadow-xl -translate-y-1;
+  }
+
+  .airy-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}

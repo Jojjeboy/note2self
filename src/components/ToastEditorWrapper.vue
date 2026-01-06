@@ -102,35 +102,49 @@ onBeforeUnmount(() => {
     border: none !important;
 }
 .toastui-editor-toolbar {
-    border-bottom: 1px solid #e5e7eb !important;
+    border-bottom: 1px solid #f1f5f9 !important; /* slate-100 */
+    padding: 8px 16px !important;
 }
 .dark .toastui-editor-toolbar {
-    border-bottom: 1px solid #374151 !important;
-    background-color: #111827 !important; /* gray-900 (page bg) */
+    border-bottom: 1px solid #1e293b !important; /* slate-800 */
+    background-color: #0f172a !important; /* bg-dark */
 }
 
 /* Make content area distinct in dark mode */
 .toastui-editor-contents {
     font-family: inherit !important;
+    padding: 24px !important;
 }
 .toastui-editor-ww-container {
     background-color: #ffffff;
 }
 .dark .toastui-editor-ww-container {
-    background-color: #1f2937 !important; /* gray-800 - distinct from page bg #111827 */
+    background-color: #1e293b !important; /* slate-800 */
 }
 
 /* Markdown mode distinction */
 .dark .toastui-editor-md-container,
 .dark .toastui-editor-md-container .toastui-editor {
-    background-color: #1f2937 !important;
+    background-color: #1e293b !important;
 }
 
 .toastui-editor-mode-switch {
-    background-color: #f9fafb !important;
+    background-color: #f8fafc !important; /* bg-light */
+    border-top: 1px solid #f1f5f9 !important;
 }
 .dark .toastui-editor-mode-switch {
-    background-color: #111827 !important;
-    border-top: 1px solid #374151 !important;
+    background-color: #0f172a !important;
+    border-top: 1px solid #1e293b !important;
+}
+
+.toastui-editor-defaultUI-toolbar button {
+  border-radius: 8px !important;
+  transition: all 0.2s !important;
+}
+.toastui-editor-defaultUI-toolbar button:hover {
+  background-color: #eff6ff !important;
+}
+.dark .toastui-editor-defaultUI-toolbar button:hover {
+  background-color: #1e3a8a !important;
 }
 </style>
