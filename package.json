@@ -1,6 +1,6 @@
 {
   "name": "note2self",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -17,7 +17,7 @@
     "lint": "eslint . --fix --cache",
     "validate": "run-s lint type-check test:ci build-only",
     "format": "prettier --write --experimental-cli src/"
-  },
+  }, 
   "dependencies": {
     "@toast-ui/editor": "^3.2.2",
     "date-fns": "^4.1.0",

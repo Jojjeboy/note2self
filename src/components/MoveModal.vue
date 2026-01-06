@@ -4,6 +4,7 @@ import { useWorkspaces } from '@/composables/useWorkspaces'
 import { useNotes, type NoteItem } from '@/composables/useNotes'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/firebase/config'
+import AlertModal from './AlertModal.vue'
 
 const props = defineProps<{
   itemToMove: NoteItem | null
@@ -19,6 +20,8 @@ const { workspaces } = useWorkspaces()
 const selectedWorkspaceId = ref('')
 const targetFolderId = ref<string>('')
 const loading = ref(false)
+const alertOpen = ref(false)
+const alertMessage = ref('')
 
 // Fetch items for the *target* workspace to list folders
 const targetWorkspaceIdComputed = computed(() => selectedWorkspaceId.value)
@@ -43,7 +46,8 @@ const handleMove = async () => {
         emit('close')
     } catch (e) {
         console.error(e)
-        alert('Failed to move item')
+        alertMessage.value = 'Failed to move item'
+        alertOpen.value = true
     } finally {
         loading.value = false
     }
@@ -60,8 +64,9 @@ const handleMove = async () => {
 
       <div class="space-y-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Workspace</label>
+            <label for="workspace-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Workspace</label>
             <select
+                id="workspace-select"
                 v-model="selectedWorkspaceId"
                 @change="targetFolderId = ''"
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -74,8 +79,9 @@ const handleMove = async () => {
         </div>
 
         <div>
-            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder (Optional)</label>
+            <label for="folder-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder (Optional)</label>
             <select
+                id="folder-select"
                 v-model="targetFolderId"
                 :disabled="!selectedWorkspaceId"
                 class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50"
@@ -105,4 +111,11 @@ const handleMove = async () => {
       </div>
     </div>
   </div>
+
+  <AlertModal
+    :isOpen="alertOpen"
+    title="Move Item"
+    :message="alertMessage"
+    @close="alertOpen = false"
+  />
 </template>

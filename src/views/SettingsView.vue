@@ -4,8 +4,9 @@ import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import ExportButton from '@/components/ExportButton.vue'
+import AlertModal from '@/components/AlertModal.vue'
+import { ref } from 'vue'
 import { useWorkspaces } from '@/composables/useWorkspaces'
-
 const { isDark, toggleTheme } = useTheme()
 const { logout } = useAuth()
 const router = useRouter()
@@ -25,12 +26,16 @@ const changeLanguage = (event: Event) => {
 
 const version = __APP_VERSION__
 
+const alertOpen = ref(false)
+const alertMessage = ref('')
+
 const checkForUpdates = async () => {
     if ('serviceWorker' in navigator) {
         const registration = await navigator.serviceWorker.getRegistration()
         if (registration) {
             await registration.update()
-            alert('Checking for updates...')
+            alertMessage.value = 'Checking for updates...'
+            alertOpen.value = true
         }
     }
 }
@@ -69,7 +74,7 @@ const checkForUpdates = async () => {
            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2"
            :class="isDark ? 'bg-blue-600' : 'bg-gray-200'"
            role="switch"
-           :aria-checked="isDark"
+           :aria-checked="isDark ? 'true' : 'false'"
         >
             <span
               aria-hidden="true"
@@ -136,5 +141,13 @@ const checkForUpdates = async () => {
       </div>
 
     </div>
+
+    <AlertModal
+    :isOpen="alertOpen"
+    title="Updates"
+    :message="alertMessage"
+    @close="alertOpen = false"
+  />
   </div>
+
 </template>

@@ -98,16 +98,32 @@ const handleBreadcrumbNavigate = (id: string | null) => {
     }
 }
 
-const createInFolder = async (type: 'folder' | 'note') => {
+const isInputModalOpen = ref(false)
+const inputModalTitle = ref('')
+const inputModalPlaceholder = ref('')
+const inputModalType = ref<'folder' | 'note'>('note')
+
+const alertModalOpen = ref(false)
+const alertModalTitle = ref('')
+const alertModalMessage = ref('')
+
+const createInFolder = (type: 'folder' | 'note') => {
+    inputModalType.value = type
+    inputModalTitle.value = type === 'folder' ? 'Create Folder' : 'Create Note'
+    inputModalPlaceholder.value = type === 'folder' ? 'Folder Name...' : 'Note Title...'
+    isInputModalOpen.value = true
+}
+
+const handleInputSubmit = async (name: string) => {
     const parentId = selectedFolderId.value
-    const name = prompt(type === 'folder' ? 'Folder Name:' : 'Note Title:')
-    if (name) {
-        try {
-           await createItem(name, type, parentId, type === 'note' ? '# ' + name : undefined)
-        } catch (e) {
-            console.error(e)
-            alert('Failed to create item')
-        }
+    try {
+        await createItem(name, inputModalType.value, parentId, '')
+        isInputModalOpen.value = false
+    } catch (e) {
+        console.error(e)
+        alertModalTitle.value = 'Error'
+        alertModalMessage.value = 'Failed to create item'
+        alertModalOpen.value = true
     }
 }
 
@@ -122,6 +138,8 @@ const navigateToItem = (item: NoteItem) => {
 
 // Move Modal Logic
 import MoveModal from '@/components/MoveModal.vue'
+import InputModal from '@/components/InputModal.vue'
+import AlertModal from '@/components/AlertModal.vue'
 import { useWorkspaces } from '@/composables/useWorkspaces'
 const { currentWorkspace } = useWorkspaces()
 
@@ -286,6 +304,21 @@ const workspaceName = computed(() => currentWorkspace.value?.name || 'Workspace'
             isMoveModalOpen = false
             // Optional: refresh or redirect
         }"
+    />
+
+    <InputModal
+        :isOpen="isInputModalOpen"
+        :title="inputModalTitle"
+        :placeholder="inputModalPlaceholder"
+        @close="isInputModalOpen = false"
+        @submit="handleInputSubmit"
+    />
+
+    <AlertModal
+        :isOpen="alertModalOpen"
+        title="Error"
+        :message="alertModalMessage"
+        @close="alertModalOpen = false"
     />
   </div>
 </template>

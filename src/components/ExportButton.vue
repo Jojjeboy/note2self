@@ -5,6 +5,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 import { useAuth } from '@/composables/useAuth'
 import type { NoteItem } from '@/composables/useNotes'
+import AlertModal from './AlertModal.vue'
 
 const props = defineProps<{
   workspaceId: string
@@ -13,6 +14,8 @@ const props = defineProps<{
 
 const { user } = useAuth()
 const isExporting = ref(false)
+const alertOpen = ref(false)
+const alertMessage = ref('')
 
 const handleExport = async () => {
     if (!user.value) return
@@ -66,7 +69,8 @@ const handleExport = async () => {
     } catch (e: unknown) {
         if (e instanceof Error) {
             console.error('Export failed', e.message)
-            alert('Export failed: ' + e.message)
+            alertMessage.value = 'Export failed: ' + e.message
+            alertOpen.value = true
         }
     } finally {
         isExporting.value = false
@@ -85,4 +89,11 @@ const handleExport = async () => {
     <svg v-else class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
     <span>{{ isExporting ? 'Exporting...' : 'Export' }}</span>
   </button>
+
+  <AlertModal
+    :isOpen="alertOpen"
+    title="Export"
+    :message="alertMessage"
+    @close="alertOpen = false"
+  />
 </template>

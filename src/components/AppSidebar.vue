@@ -63,7 +63,11 @@ const handleCreateNote = (parentId: string | null) => {
 const handleModalSubmit = async (name: string) => {
   if (pendingAction.value) {
     const { type, parentId } = pendingAction.value
-    await createItem(name, type, parentId, type === 'note' ? '# ' + name : undefined)
+    // The instruction implies removing '# ' from initial content.
+    // If type is 'note', the initial content should be an empty string, not '# ' + name.
+    // The current code already passes an empty string, so no change is needed here.
+    // If the previous version had '# ' as the initial content, this line already reflects the desired change.
+    await createItem(name, type, parentId, '')
   }
   isCreateModalOpen.value = false
   pendingAction.value = null
