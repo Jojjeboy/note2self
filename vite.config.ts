@@ -11,7 +11,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['logo.png', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
         name: 'Note 2 Self',
@@ -38,6 +38,9 @@ export default defineConfig({
     reportCompressedSize: true,
     chunkSizeWarningLimit: 1000,
     watch: null,
+  },
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
   },
   resolve: {
     alias: {

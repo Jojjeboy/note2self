@@ -35,6 +35,9 @@
     "title": "Settings",
     "select_language": "Select Language",
     "dark_mode": "Dark Mode",
-    "account": "Account"
+    "account": "Account",
+    "app_info": "App Info",
+    "version": "Version",
+    "check_for_updates": "Check for Updates"
   }
 }

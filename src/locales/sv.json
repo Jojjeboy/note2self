@@ -35,6 +35,9 @@
     "title": "Inställningar",
     "select_language": "Välj Språk",
     "dark_mode": "Mörkt Läge",
-    "account": "Konto"
+    "account": "Konto",
+    "app_info": "App-info",
+    "version": "Version",
+    "check_for_updates": "Sök efter uppdateringar"
   }
 }

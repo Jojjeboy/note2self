@@ -22,6 +22,18 @@ const changeLanguage = (event: Event) => {
     locale.value = target.value
     localStorage.setItem('user-locale', target.value)
 }
+
+const version = __APP_VERSION__
+
+const checkForUpdates = async () => {
+    if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.getRegistration()
+        if (registration) {
+            await registration.update()
+            alert('Checking for updates...')
+        }
+    }
+}
 </script>
 
 <template>
@@ -90,6 +102,23 @@ const changeLanguage = (event: Event) => {
          >
            {{ t('common.logout') }}
          </button>
+      </div>
+
+      <!-- App Info -->
+      <div class="p-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ t('settings.app_info') }}</h3>
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('settings.version') }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 font-mono">{{ version }}</p>
+          </div>
+          <button
+            @click="checkForUpdates"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            {{ t('settings.check_for_updates') }}
+          </button>
+        </div>
       </div>
 
     </div>
