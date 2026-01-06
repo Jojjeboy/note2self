@@ -29,7 +29,7 @@ const getPriorityClass = (priority: Priority) => {
 </script>
 
 <template>
-  <div class="p-6 max-w-4xl mx-auto">
+  <div class="p-3 md:p-6 max-w-4xl mx-auto">
     <div class="flex items-center mb-8">
         <button
             @click="router.push('/settings')"

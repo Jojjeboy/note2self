@@ -174,7 +174,7 @@ const workspaceName = computed(() => currentWorkspace.value?.name || 'Workspace'
     />
 
     <!-- Folder View -->
-    <div v-else-if="selectedFolderId" class="flex-1 p-6 overflow-y-auto">
+    <div v-else-if="selectedFolderId" class="flex-1 p-2 md:p-6 overflow-y-auto">
         <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
             <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
             {{ currentFolder?.title || 'Folder' }}
@@ -239,7 +239,7 @@ const workspaceName = computed(() => currentWorkspace.value?.name || 'Workspace'
     </div>
 
     <!-- Dashboard / Root View -->
-    <div v-else class="flex-1 p-6 overflow-y-auto">
+    <div v-else class="flex-1 p-2 md:p-6 overflow-y-auto">
         <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">Workspace Overview</h2>
 
         <div v-if="dashboardItems.length > 0" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">

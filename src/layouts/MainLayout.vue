@@ -42,9 +42,10 @@ const { isSidebarOpen, closeSidebar, toggleSidebar } = useLayout()
        </header>
 
       <!-- Page Content -->
-      <div class="flex-1 overflow-auto p-4 md:p-8">
+      <div class="flex-1 overflow-auto p-2 md:p-8">
         <slot />
       </div>
     </main>
   </div>
 </template>
+```

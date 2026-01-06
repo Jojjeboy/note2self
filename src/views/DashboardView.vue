@@ -28,7 +28,7 @@ const formatDate = (timestamp: Timestamp | null) => {
 </script>
 
 <template>
-  <div class="p-6 max-w-4xl mx-auto">
+  <div class="p-2 md:p-6 max-w-4xl mx-auto">
     <header class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Dashboard</h1>
       <p class="text-gray-600 dark:text-gray-400">Welcome back! Here are your most recent notes.</p>

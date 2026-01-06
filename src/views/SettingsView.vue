@@ -37,7 +37,7 @@ const checkForUpdates = async () => {
 </script>
 
 <template>
-  <div class="p-6 max-w-2xl mx-auto">
+  <div class="p-3 md:p-6 max-w-2xl mx-auto">
     <h1 class="text-3xl font-bold mb-8 text-gray-900 dark:text-gray-100">{{ t('settings.title') }}</h1>
 
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 divide-y divide-gray-200 dark:divide-gray-700">
