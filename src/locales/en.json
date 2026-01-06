@@ -38,6 +38,19 @@
     "account": "Account",
     "app_info": "App Info",
     "version": "Version",
-    "check_for_updates": "Check for Updates"
+    "check_for_updates": "Check for Updates",
+    "roadmap": {
+      "title": "Roadmap",
+      "add_item": "Add Future Update",
+      "item_placeholder": "What would you like to see in the app?",
+      "priority": "Priority",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High",
+      "status": "Status",
+      "done": "Done",
+      "todo": "To-do",
+      "no_items": "No roadmap items yet. Add your first idea!"
+    }
   }
 }

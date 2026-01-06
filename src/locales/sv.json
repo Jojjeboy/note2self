@@ -38,6 +38,19 @@
     "account": "Konto",
     "app_info": "App-info",
     "version": "Version",
-    "check_for_updates": "Sök efter uppdateringar"
+    "check_for_updates": "Sök efter uppdateringar",
+    "roadmap": {
+      "title": "Roadmap",
+      "add_item": "Lägg till framtida uppdatering",
+      "item_placeholder": "Vad vill du se i appen?",
+      "priority": "Prioritet",
+      "low": "Låg",
+      "medium": "Mellan",
+      "high": "Hög",
+      "status": "Status",
+      "done": "Klar",
+      "todo": "Att göra",
+      "no_items": "Inga roadmap-objekt än. Lägg till din första idé!"
+    }
   }
 }

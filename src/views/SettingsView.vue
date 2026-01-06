@@ -104,6 +104,20 @@ const checkForUpdates = async () => {
          </button>
       </div>
 
+      <!-- Roadmap -->
+      <div class="p-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ t('settings.roadmap.title') }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Track future app updates</p>
+        </div>
+        <button
+          @click="router.push('/settings/roadmap')"
+          class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+        >
+          View Roadmap
+        </button>
+      </div>
+
       <!-- App Info -->
       <div class="p-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ t('settings.app_info') }}</h3>
